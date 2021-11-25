@@ -1,0 +1,16 @@
+                    --_--_--_--_--_--_--_--_--_--_--_--_--
+                     Reverse Polish Notation - Calculator
+                    --_--_--_--_--_--_--_--_--_--_--_--_--
+
+Use:
+  'make' to compile.
+  'make clean' to remove the objects.
+  './rpn_calc' to execute.
+
+OBS:
+  Use Square like 's'.
+  Example: s(49) or s49.
+
+  Use the '-' like unary without space and '-' like binary with space.
+  Example: 10 + -10.
+           10 - 10.

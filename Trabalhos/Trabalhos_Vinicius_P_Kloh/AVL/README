@@ -1,0 +1,30 @@
+                  --_--_--_--_--_--_--_--_--_--_--_--
+                        Balanced Tree (AVL)
+                  --_--_--_--_--_--_--_--_--_--_--_--
+
+Use:
+  'make' to compile.
+  'make clean' to remove the objects.
+  './avl' to execute.
+
+--------------------------------------------------------------------------------
+
+Commands:
+  'i' to insert a new node.
+  'd' to delete a node.
+  'p' to print the tree.
+  'e' to exit.
+
+  OBS: All commands without ''.
+
+--------------------------------------------------------------------------------
+
+Inserting a new node:
+  Enter the value of the new node (use integer type).
+  Example: 20.
+
+--------------------------------------------------------------------------------
+
+Deleting a node:
+  Enter the value of the node (use integer type).
+  Example: 20.

@@ -1,0 +1,49 @@
+                    --_--_--_--_--_--_--_--_--_--_--_--
+                          Bi-directional Graph
+                    --_--_--_--_--_--_--_--_--_--_--_--
+
+Use:
+  'make' to compile.
+  'make clean' to remove the objects.
+  './graph' to execute.
+
+--------------------------------------------------------------------------------
+
+Commands:
+  'i' to insert a new node.
+  'd' to delete a node.
+  'p' to print the graph.
+  'g' to use the greedy algorithm.
+  'f' to free the graph.
+  'e' to exit.
+
+  OBS: All commands without ''.
+
+--------------------------------------------------------------------------------
+
+Inserting a new node:
+  Enter the name of the node (use char type).
+  Example: 'A'.
+
+  After, enter the neighbors of the node (use char type), without space.
+  Example: 'B''D'.
+          Not 'A' 'B' 'D'.
+
+  To finish the insertion, enter the cost of the neighbors (use integer type).
+  Example: 10
+           20
+            5
+
+  If the node does not any neighbors, press 'Enter' without neighbor.
+
+--------------------------------------------------------------------------------
+
+Deleting a node:
+  Enter the name of the node (use char type).
+  Example: 'A'.
+
+--------------------------------------------------------------------------------
+
+Using the greedy algorithm:
+  Enter the name of the node to start (use char type).
+  Example: 'A'.

@@ -1,0 +1,266 @@
+/*
+ * =====================================================================================
+ *
+ *  	 Filename:  avl.c
+ *
+ *  Description:  balanced tree - AVL implementation
+ *
+ *        Version:  2.3.2
+ *        Created:  May 26 2017 00:49:42 pm
+ *    Last Update:  Jun 27 2017 09:19:44 pm
+ *       Compiler:  cc
+ *         Author:  Vinicius Prata Kloh
+ *   Organization:  Comcidis/LNCC
+ *
+ * =====================================================================================
+*/
+
+#include <stdlib.h>
+#include <stdio.h>
+
+struct node{
+  int value;
+  struct node* left;
+  struct node* right;
+  int height;
+}; typedef struct node Node;
+
+struct tree{
+  struct node* root;
+}; typedef struct tree Tree;
+
+/*
+  auxiliar functions
+*/
+int left_rotate(Node** node);
+int right_rotate(Node** node);
+int left_right_rotate(Node** node);
+int right_left_rotate(Node** node);
+int check_height(Node** node);
+int balancing(Node** node);
+int larger(int value_1, int value_2);
+int search_node_aux(Node** node, Node** node2);
+/*
+  end auxiliar functions
+*/
+
+int create_tree(Tree** tree){
+  (*tree) = (Tree*) malloc(sizeof(Tree));
+  if(!(*tree))
+    return -1;
+  (*tree)->root = NULL;
+  return 0;
+}
+
+int insert(Tree** tree, int value){
+  int ret;
+
+  if(!(*tree)->root){
+    Node* new_node = (Node*) malloc(sizeof(Node));
+    if(!new_node)
+      return 0;
+    new_node->value = value;
+    new_node->left = NULL;
+    new_node->right = NULL;
+    new_node->height = 0;
+    (*tree)->root = new_node;
+    return 1;
+  }
+  if((*tree)->root->value > value){
+      Tree* aux = (Tree*) malloc(sizeof(Tree));
+      aux->root = (*tree)->root->left;
+        if(insert(&aux, value)){
+          (*tree)->root->left = aux->root;
+          if(balancing(&(*tree)->root) >= 2){
+            if(value < aux->root->value)
+              right_rotate(&(*tree)->root);
+            else
+              left_right_rotate(&(*tree)->root);
+          }
+        } else
+            ret = 0;
+      } else if((*tree)->root->value < value){
+          Tree* aux = (Tree*) malloc(sizeof(Tree));
+          aux->root = (*tree)->root->right;
+            if(insert(&aux, value)){
+              (*tree)->root->right = aux->root;
+              if(balancing(&(*tree)->root) >= 2){
+                if(value > aux->root->value)
+                  left_rotate(&(*tree)->root);
+                else
+                  right_left_rotate(&(*tree)->root);
+              }
+            } else
+                ret = 0;
+        } else
+          return 0;
+
+  (*tree)->root->height = larger(check_height(&(*tree)->root->left), check_height(&(*tree)->root->right)) + 1;
+  return ret;
+}
+
+int delete(Tree** tree, int value){
+  int ret = 1;
+  if(!(*tree)->root)
+    return 0;
+
+  if((*tree)->root->value > value){
+    Tree* aux = (Tree*) malloc(sizeof(Tree));
+    aux->root = (*tree)->root->left;
+    if(delete(&(aux), value)){
+      (*tree)->root->left = aux->root;
+      free(aux);
+      if(balancing(&(*tree)->root) >= 2){
+        if(check_height(&(*tree)->root->right->left) <= check_height(&(*tree)->root->right->right)){
+          left_rotate(&(*tree)->root);
+        }
+        else{
+          right_left_rotate(&(*tree)->root);
+        }
+      }
+    } else
+        ret = 0;
+  } else if((*tree)->root->value < value){
+    Tree* aux = (Tree*) malloc(sizeof(Tree));
+    aux->root = (*tree)->root->right;
+    if(delete(&(aux), value)){
+      (*tree)->root->right = aux->root;
+      free(aux);
+      if(balancing(&(*tree)->root) >= 2){
+        if(check_height(&(*tree)->root->left->right) <= check_height(&(*tree)->root->left->left))
+          right_rotate(&(*tree)->root);
+        else
+          left_right_rotate(&(*tree)->root);
+      }
+    } else
+        ret = 0;
+  }
+  (*tree)->root->height = larger(check_height(&(*tree)->root->left), check_height(&(*tree)->root->right)) + 1;
+  if((*tree)->root->value == value){
+      if(!(*tree)->root->left || !(*tree)->root->right){
+        Node* node_aux = (*tree)->root;
+        if(!node_aux->left && !node_aux->right)
+          (*tree)->root = NULL;
+        else if(node_aux->left)
+          (*tree)->root = (*tree)->root->left;
+        else
+          (*tree)->root = (*tree)->root->right;
+      free(node_aux);
+      } else{
+          Tree* aux2 = (Tree*) malloc(sizeof(Tree));
+          Node* node_aux = NULL;
+          search_node_aux(&(*tree)->root->right, &node_aux);
+          printf("Node aux: %d \n", node_aux->value);
+          (*tree)->root->value = node_aux->value;
+          aux2->root = (*tree)->root->right;
+          delete(&(aux2), (*tree)->root->value);
+          (*tree)->root->right = aux2->root;
+          free(aux2);
+          if(balancing(&(*tree)->root) >= 2){
+            if(check_height(&(*tree)->root->left->left) >= check_height(&(*tree)->root->left->right))
+              right_rotate(&(*tree)->root);
+            else
+              left_right_rotate(&(*tree)->root);
+          }
+        }
+    return 1;
+  }
+  return ret;
+}
+
+int print_tree(Tree** tree, int i){
+  int j;
+  Tree* aux = (Tree*) malloc(sizeof(Tree));
+  aux->root = (*tree)->root;
+  if(!(*tree)->root)
+    return 0;
+  if(aux->root->right){
+    aux->root = (*tree)->root->right;
+    print_tree(&(aux), i+1);
+  }
+  for(j = 0; j < i; j++)
+    printf("\t");
+  aux->root = (*tree)->root;
+  if(aux)
+    printf("[%d| %d ]\n", aux->root->height, aux->root->value);
+  if(aux->root->left){
+    aux->root = (*tree)->root->left;
+    print_tree(&(aux), i+1);
+  }
+  free(aux);
+  return 1;
+}
+
+int left_rotate(Node** node){
+  printf("L \n");
+  Node* aux = NULL;
+  if(!(*node))
+    return -1;
+  aux = (*node)->right;
+  (*node)->right = aux->left;
+  aux->left = (*node);
+
+  (*node)->height = larger(check_height(&(*node)->left), check_height(&(*node)->right)) + 1;
+  aux->height = larger(check_height(&aux->right), check_height(&(*node))) + 1;
+  (*node) = aux;
+  return 0;
+}
+
+int right_rotate(Node** node){
+  printf("R \n");
+  Node* aux = NULL;
+  if(!(*node))
+    return -1;
+  aux = (*node)->left;
+  (*node)->left = aux->right;
+  aux->right = (*node);
+
+  (*node)->height = larger(check_height(&(*node)->left), check_height(&(*node)->right)) + 1;
+  aux->height = larger(check_height(&aux->left), check_height(&(*node))) + 1;
+  (*node) = aux;
+  return 0;
+}
+
+int right_left_rotate(Node** node){
+  if(!(*node))
+    return -1;
+  right_rotate(&(*node)->right);
+  left_rotate(&(*node));
+  return 0;
+}
+
+int left_right_rotate(Node** node){
+  if(!(*node))
+    return -1;
+  left_rotate(&(*node)->left);
+  right_rotate(&(*node));
+  return 0;
+}
+
+int check_height(Node** node){
+  if(!(*node))
+    return -1;
+  else
+    return (*node)->height > 0 ? (*node)->height : (*node)->height*(-1);
+}
+
+int balancing(Node** node){
+  int bal;
+   bal = check_height(&(*node)->left) - check_height(&(*node)->right);
+   return bal > 0 ? bal : bal*(-1);
+}
+
+int larger(int value_1, int value_2){
+  return (value_1 > value_2) ? value_1 : value_2;
+}
+
+int search_node_aux(Node** node, Node** node2){
+  Node* aux = (*node);
+  Node* aux2 = (*node)->left;
+  while(aux2){
+    aux = aux2;
+    aux2 = aux->left;
+  }
+  (*node2) = aux;
+  return 1;
+}

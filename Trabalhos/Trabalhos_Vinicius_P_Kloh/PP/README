@@ -1,0 +1,17 @@
+                  --_--_--_--_--_--_--_--_--_--_--_--
+                        Pollutant Propagation
+                  --_--_--_--_--_--_--_--_--_--_--_--
+
+Use:
+  'make' to compile.
+  'make clean' to remove the objects.
+  './pollutant_propagation <input_file> <tolerance> <iterations>' to execute.
+
+--------------------------------------------------------------------------------
+
+Input parameter necessary:
+  'i)'   input_file.
+  'ii)'  tolerance of convergence.
+  'iii)' max number of iterations.
+
+  Example: ./pollutant_propagation island/island.txt 0.0001 100
